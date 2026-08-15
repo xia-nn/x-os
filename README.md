@@ -28,8 +28,8 @@ X OS/
 - 桌面 Shell：`xos-shell`（Qt6/QML，顶部面板 + 启动器）
 - 设置中心：`xos-settings`（Qt6/QML，网络/显示/声音/蓝牙/电源/用户分类占位）
 - 原子更新：`xos-update`（OSTree / A-B 回滚桩，默认预览、可 `--apply`）
-- 安装器：`Calamares`（Live → 硬盘）
 - 中文输入：`fcitx5` + `fcitx5-chinese-addons`
+- 安装器：`Calamares` 配置已就绪（Live → 硬盘），但 ** calamares 包暂未预装**（它在 AUR 而非官方仓库，后续通过 AUR/chaotic-aur 启用）
 - 预装应用：终端 `alacritty`、文件管理器 `pcmanfm`、浏览器 `firefox`
 - 系统服务：`systemd`、`NetworkManager`、`PipeWire`/`WirePlumber`、`BlueZ`、`power-profiles-daemon`、`polkit`
 
@@ -64,6 +64,10 @@ cd iso
 - Runner 上用 Docker（`iso/Dockerfile`）构建，与本地方式 B 完全一致；
 - 构建产物 ISO 作为 Artifact（`xos-iso`）提供下载，保留 30 天。
 
+**已成功的构建**：https://github.com/xia-nn/x-os/actions/runs/31868521150
+- Artifact `xos-iso` 大小约 1.7 GB，解压后得到 `xos-<date>.iso`。
+- 下载后写盘：`dd if=xos-*.iso of=/dev/sdX bs=4M status=progress`（Linux）或用 Rufus（Windows，DD 模式）。
+
 如需本地构建，请使用方式 A（Arch 主机）或方式 B（自带 Docker 的宿主机）。
 
 ## 运行验证（QEMU）
@@ -78,6 +82,7 @@ cd iso
 
 ## 已知限制（阶段1）
 
-- 阶段1 已落地：Calamares 安装器配置、fcitx5 中文输入、设置中心骨架（`xos-settings`）、OSTree 原子更新桩（`xos-update`）、硬件/电源/蓝牙支撑。设置中心的各分类（网络/显示/声音/蓝牙/电源/用户）目前为占位面板，实际控制逻辑计划在阶段2 接入。
+- 阶段1 已落地：fcitx5 中文输入、设置中心骨架（`xos-settings`）、OSTree 原子更新桩（`xos-update`）、硬件/电源/蓝牙支撑。设置中心的各分类（网络/显示/声音/蓝牙/电源/用户）目前为占位面板，实际控制逻辑计划在阶段2 接入。
+- **Calamares 安装器**：配置文件和桌面项已就绪，但 ISO 中暂未预装 `calamares` 包（它在 AUR 而非官方仓库）。构建成功后才把它从 `packages.x86_64` 中临时注释掉，后续通过 AUR/chaotic-aur 安装后可恢复。
 - `xos-update` 默认仅**预览** OSTree 升级流程；在 Live 环境中不执行真实更新（避免改动系统），安装到硬盘（Calamares + OSTree 管理式根）后加 `--apply` 即为真实流程。
 - 构建与 QEMU 验证需在 Arch / Docker 环境（或 GitHub Actions）中进行（当前开发沙箱禁用系统级工具，故无法在沙箱内产出 `.iso`）。

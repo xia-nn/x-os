@@ -6,6 +6,7 @@ profiledef.sh text eol=lf
 *.desktop text eol=lf
 *.conf text eol=lf
 *.cfg text eol=lf
+*.md text eol=lf
 *.xml text eol=lf
 *.qml text eol=lf
 *.cpp text eol=lf
