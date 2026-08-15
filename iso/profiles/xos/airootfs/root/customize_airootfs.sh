@@ -15,6 +15,18 @@ fi
 # 允许 wheel 组无密码 sudo（演示用，后续收紧）
 echo '%wheel ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/xos
 
+# 预配置 Live 环境，避免 systemd-firstboot 交互式询问时区/locale/root密码
+systemd-machine-id-setup || true
+echo "xos-live" > /etc/hostname
+ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+echo "LANG=zh_CN.UTF-8" > /etc/locale.conf
+echo "KEYMAP=us" > /etc/vconsole.conf
+sed -i 's/^#\(zh_CN.UTF-8\)/\1/' /etc/locale.gen
+sed -i 's/^#\(en_US.UTF-8\)/\1/' /etc/locale.gen
+locale-gen || true
+# 演示用 root 密码，避免 firstboot 卡住
+echo "root:root" | chpasswd
+
 # 启用系统服务
 mkdir -p /etc/systemd/system/graphical.target.wants /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/sddm.service /etc/systemd/system/graphical.target.wants/sddm.service
