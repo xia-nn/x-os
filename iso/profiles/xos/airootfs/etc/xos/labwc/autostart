@@ -3,5 +3,10 @@
 # 中文输入法守护进程
 fcitx5 &
 
+# 首次启动运行 OOBE 向导（选地区/时区），完成后进入桌面
+if [ ! -f /var/lib/xos/firstboot-done ]; then
+  xos-firstboot
+fi
+
 # X OS 桌面 Shell（面板 + 启动器）
 xos-shell &

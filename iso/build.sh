@@ -21,6 +21,9 @@ cp -r ../shell/xos-shell "$PROFILE/airootfs/opt/xos-shell-src"
 rm -rf "$PROFILE/airootfs/opt/xos-settings-src"
 cp -r ../shell/xos-settings "$PROFILE/airootfs/opt/xos-settings-src"
 
+rm -rf "$PROFILE/airootfs/opt/xos-firstboot-src"
+cp -r ../shell/xos-firstboot "$PROFILE/airootfs/opt/xos-firstboot-src"
+
 rm -rf "$WORK" "$OUT"
 mkarchiso -v -w "$WORK" -o "$OUT" "$PROFILE"
 
