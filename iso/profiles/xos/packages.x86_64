@@ -6,6 +6,7 @@ linux-lts
 linux-firmware
 mkinitcpio
 mkinitcpio-archiso
+plymouth
 grub
 efibootmgr
 syslinux

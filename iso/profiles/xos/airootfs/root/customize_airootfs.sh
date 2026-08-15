@@ -32,6 +32,11 @@ mkdir -p /etc/systemd/system/graphical.target.wants /etc/systemd/system/multi-us
 ln -sf /usr/lib/systemd/system/sddm.service /etc/systemd/system/graphical.target.wants/sddm.service
 ln -sf /usr/lib/systemd/system/NetworkManager.service /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 
+# 配置 Plymouth 图形化启动动画（替代文本滚动，类似 Windows 启动界面）
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+  plymouth-set-default-theme spinfinity || true
+fi
+
 # 编译并安装自研 Qt 应用（源码由 build.sh 同步至 /opt/*-src）
 build_qt_app() {
   local src="$1" bin="$2"

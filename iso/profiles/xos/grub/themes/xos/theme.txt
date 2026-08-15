@@ -1,0 +1,27 @@
+# X OS GRUB2 theme — dark, centered (Windows Boot Manager-like)
+desktop-color: "#0b0e14"
+title-text: "X OS"
+title-color: "#e6e9f0"
+title-font: "Unknown Regular 32"
++ boot_menu {
+  left = 28%
+  width = 44%
+  top = 36%
+  height = 40%
+  item_font = "Unknown Regular 18"
+  item_color = "#7d8590"
+  selected_item_color = "#ffffff"
+  item_height = 34
+  item_spacing = 10
+  items_per_page = 4
+}
++ label {
+  top = 82%
+  left = 50%
+  width = 60%
+  align = "center"
+  id = "__timeout__"
+  text = ""
+  color = "#525a66"
+  font = "Unknown Regular 14"
+}
