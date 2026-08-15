@@ -3,7 +3,7 @@ FROM archlinux:latest
 # 准备可用镜像源并安装构建工具（mkarchiso 需要 root，镜像内默认即 root）
 RUN echo 'Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist \
  && pacman -Syu --noconfirm \
- && pacman -S --noconfirm archiso
+ && pacman -S --noconfirm archiso grub syslinux dosfstools
 
 WORKDIR /xos
 COPY iso/profiles/xos ./profiles/xos
