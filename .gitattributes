@@ -1,0 +1,15 @@
+# X OS: force LF line endings for files consumed inside the Arch Linux chroot / Docker build.
+# Windows developers with core.autocrlf=true would otherwise commit CRLF, breaking shell scripts.
+.gitattributes text eol=lf
+*.sh text eol=lf
+profiledef.sh text eol=lf
+*.desktop text eol=lf
+*.conf text eol=lf
+*.xml text eol=lf
+*.qml text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+packages.x86_64 text eol=lf
+pacman.conf text eol=lf

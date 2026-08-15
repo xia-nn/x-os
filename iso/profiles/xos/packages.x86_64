@@ -7,6 +7,8 @@ linux-firmware
 mkinitcpio
 grub
 efibootmgr
+syslinux
+dosfstools
 
 # ----- 基础用户态 -----
 base
