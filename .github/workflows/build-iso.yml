@@ -1,8 +1,8 @@
-# X OS — 自动构建 Live ISO 并上传为 Artifact
+# X OS — 自动构建 Live ISO 并上传为 Artifact + Release
 #
 # 说明：本地开发沙箱禁用了 Docker / 系统级工具，无法在沙箱内直接执行 mkarchiso。
 # 本工作流在 GitHub 托管的 ubuntu runner 上用 Docker 构建（与 iso/Dockerfile 一致），
-# 构建产物 ISO 作为 GitHub Artifact 提供下载，是获取可启动 X OS ISO 的推荐路径。
+# 构建产物 ISO 作为 GitHub Artifact 和 GitHub Release 资产同时提供下载。
 #
 # 运行方式：
 #   - 推送到 main 分支自动触发；
@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-iso:
@@ -48,3 +48,18 @@ jobs:
           path: iso/out/*.iso
           if-no-files-found: error
           retention-days: 30
+
+      - name: 发布 ISO 到 GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: iso-${{ github.run_id }}
+          name: X OS Live ISO Build ${{ github.run_number }}
+          body: |
+            这是 GitHub Actions 自动构建的 X OS Live ISO。
+
+            - 构建编号：#${{ github.run_number }}
+            - 运行 ID：${{ github.run_id }}
+            - 构建提交：${{ github.sha }}
+            - 下载后解压（如为 zip）即可得到 `.iso` 文件，用于虚拟机或刻录 U 盘。
+          prerelease: true
+          files: iso/out/*.iso
