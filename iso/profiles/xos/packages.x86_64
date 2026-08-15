@@ -49,7 +49,9 @@ noto-fonts-emoji
 # ===== 阶段1：基础系统打磨 =====
 
 # 安装器（Live -> 硬盘）
-calamares
+# NOTE: calamares 在 Arch 官方仓库不存在，位于 AUR。先注释掉以让 ISO 构建成功；
+#       后续可通过 AUR/chaotic-aur 在 customize_airootfs.sh 中安装并恢复启用。
+# calamares
 
 # 中文输入法（fcitx5）
 fcitx5
