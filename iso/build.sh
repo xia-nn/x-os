@@ -13,6 +13,8 @@ OUT=out
 WORK=work
 
 # 将自研应用源码同步进 profile，供 customize_airootfs.sh 编译
+mkdir -p "$PROFILE/airootfs/opt"
+
 rm -rf "$PROFILE/airootfs/opt/xos-shell-src"
 cp -r ../shell/xos-shell "$PROFILE/airootfs/opt/xos-shell-src"
 

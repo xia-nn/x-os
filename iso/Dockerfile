@@ -11,7 +11,8 @@ COPY shell/xos-shell ./shell/xos-shell
 COPY shell/xos-settings ./shell/xos-settings
 
 # 同步 shell 源码进 profile（customize_airootfs.sh 会编译它们）
-RUN rm -rf profiles/xos/airootfs/opt/xos-shell-src \
+RUN mkdir -p profiles/xos/airootfs/opt \
+ && rm -rf profiles/xos/airootfs/opt/xos-shell-src \
  && cp -r shell/xos-shell profiles/xos/airootfs/opt/xos-shell-src \
  && rm -rf profiles/xos/airootfs/opt/xos-settings-src \
  && cp -r shell/xos-settings profiles/xos/airootfs/opt/xos-settings-src
