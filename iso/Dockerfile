@@ -1,9 +1,16 @@
 FROM archlinux:latest
 
 # 准备可用镜像源并安装构建工具（mkarchiso 需要 root，镜像内默认即 root）
-RUN echo 'Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch' > /etc/pacman.d/mirrorlist \
+# 使用多个镜像源避免单一镜像超时；pacman.conf 中禁用下载超时
+RUN cat > /etc/pacman.d/mirrorlist <<'EOF'
+Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch
+Server = https://mirrors.kernel.org/archlinux/$repo/os/$arch
+EOF
+RUN sed -i 's/^#DisableDownloadTimeout/DisableDownloadTimeout/' /etc/pacman.conf \
+ && sed -i 's/^#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf \
  && pacman -Syu --noconfirm \
- && pacman -S --noconfirm archiso grub syslinux dosfstools
+ && pacman -S --noconfirm --disable-download-timeout archiso grub syslinux dosfstools
 
 WORKDIR /xos
 COPY iso/profiles/xos ./profiles/xos
