@@ -78,4 +78,5 @@ xdg-utils
 
 # xos-shell / xos-settings 构建依赖（customize_airootfs.sh 内编译，后续阶段可移除）
 cmake
+make
 gcc
