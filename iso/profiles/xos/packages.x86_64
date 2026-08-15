@@ -5,6 +5,7 @@
 linux-lts
 linux-firmware
 mkinitcpio
+mkinitcpio-archiso
 grub
 efibootmgr
 syslinux
