@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=安装 X OS
+Comment=Install X OS to hard disk
+Exec=sudo calamares
+Icon=drive-harddisk
+Terminal=false
+Type=Application
+Categories=System;

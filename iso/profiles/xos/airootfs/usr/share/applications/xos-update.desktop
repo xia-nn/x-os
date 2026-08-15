@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=X OS 更新
+GenericName=系统更新
+Comment=OSTree / A-B 原子更新（阶段1骨架）
+Exec=xos-update
+Icon=system-software-update
+Terminal=true
+Categories=Settings;System;
+NoDisplay=false

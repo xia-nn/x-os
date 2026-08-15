@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=X OS 设置
+GenericName=系统设置
+Comment=X OS 设置中心（阶段1骨架）
+Exec=xos-settings
+Icon=preferences-system
+Terminal=false
+Categories=Settings;
+NoDisplay=false

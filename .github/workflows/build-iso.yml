@@ -1,0 +1,50 @@
+# X OS — 自动构建 Live ISO 并上传为 Artifact
+#
+# 说明：本地开发沙箱禁用了 Docker / 系统级工具，无法在沙箱内直接执行 mkarchiso。
+# 本工作流在 GitHub 托管的 ubuntu runner 上用 Docker 构建（与 iso/Dockerfile 一致），
+# 构建产物 ISO 作为 GitHub Artifact 提供下载，是获取可启动 X OS ISO 的推荐路径。
+#
+# 运行方式：
+#   - 推送到 main 分支自动触发；
+#   - 或在 Actions 页面手动 Run workflow（workflow_dispatch）。
+
+name: Build X OS ISO
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 构建 X OS ISO（Docker）
+        run: |
+          set -euo pipefail
+          mkdir -p iso/out
+          # 构建上下文为仓库根，Dockerfile 内 COPY iso/ 与 shell/
+          docker build -t xos-builder -f iso/Dockerfile .
+          docker run --rm --privileged -v "$PWD/iso/out":/xos/out xos-builder
+
+      - name: 列出产出
+        run: ls -lh iso/out
+
+      - name: 上传 ISO 为 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: xos-iso
+          path: iso/out/*.iso
+          if-no-files-found: error
+          retention-days: 30

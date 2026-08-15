@@ -1,0 +1,7 @@
+#!/bin/sh
+# labwc autostart：合成器启动后自动拉起会话组件
+# 中文输入法守护进程
+fcitx5 &
+
+# X OS 桌面 Shell（面板 + 启动器）
+xos-shell &

@@ -1,0 +1,18 @@
+# ---- X OS 构建产物 ----
+iso/out/
+iso/work/
+
+# ---- 本地编译目录（CMake / qmake）----
+build/
+**/build/
+
+# ---- 日志 ----
+*.log
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+Thumbs.db
+*.swp
+
+# ---- 本机工作区记忆（非项目源码，勿上传）----
+.workbuddy/

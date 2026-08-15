@@ -1,0 +1,124 @@
+#!/bin/bash
+#
+# xos-update — X OS 原子更新桩（阶段1骨架）
+#
+# 设计目标（对应设计规格 §5 文件系统 / 原子更新）：
+#   - 基于 OSTree 的管理式根（A-B 双部署），更新不可变根、失败可回滚。
+#   - 正常更新：ostree admin upgrade 拉取新提交 -> 写入备用部署 -> 切换默认部署 -> 重启生效。
+#   - 回滚：ostree admin rollback 切回上一部署。
+#
+# 本脚本为骨架：默认只“预览”将要执行的步骤，加 --apply 才真正执行，
+# 以免在 Live 环境中误改系统。安装到硬盘（Calamares + OSTree）后即为真实流程。
+#
+set -uo pipefail
+
+REPO=${OSTREE_REPO:-/sysroot/ostree/repo}
+PROG="xos-update"
+
+c_info()  { printf '\033[36m[*]\033[0m %s\n' "$*"; }
+c_ok()    { printf '\033[32m[+]\033[0m %s\n' "$*"; }
+c_warn()  { printf '\033[33m[!]\033[0m %s\n' "$*"; }
+c_err()   { printf '\033[31m[-]\033[0m %s\n' "$*"; }
+
+usage() {
+    cat <<EOF
+用法: $PROG [选项]
+  --status    显示当前 OSTree 部署状态
+  --apply     真正执行 ostree admin upgrade（默认仅预览）
+  --rollback  回滚到上一部署（预览，需配合 --apply）
+  -h, --help  显示本帮助
+EOF
+}
+
+# 是否需要 root；非 root 时尝试提权（预览不需要）
+need_root() {
+    if [ "$(id -u)" -ne 0 ]; then
+        c_warn "本操作需要 root 权限，尝试通过 pkexec/sudo 提权…"
+        if command -v pkexec >/dev/null 2>&1; then
+            exec pkexec "$0" "$@"
+        elif command -v sudo >/dev/null 2>&1; then
+            exec sudo "$0" "$@"
+        else
+            c_err "未找到 pkexec/sudo，请手动以 root 运行。"
+            exit 1
+        fi
+    fi
+}
+
+is_ostree() {
+    [ -d "$REPO" ] && command -v ostree >/dev/null 2>&1
+}
+
+MODE="preview"
+ACTION="upgrade"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --status)   ACTION="status";;
+        --apply)    MODE="apply";;
+        --rollback) ACTION="rollback";;
+        -h|--help)  usage; exit 0;;
+        *) c_err "未知参数: $1"; usage; exit 1;;
+    esac
+    shift
+done
+
+echo "=============================================="
+echo " X OS 更新器 ($PROG) — 阶段1骨架"
+echo "=============================================="
+
+if [ "$ACTION" = "status" ]; then
+    if is_ostree; then
+        c_info "当前 OSTree 部署状态："
+        ostree admin status || c_warn "无法读取部署状态（可能尚未初始化 OSTree 根）。"
+    else
+        c_warn "未检测到 OSTree 管理式根（REPO=$REPO）。"
+        c_info "当前处于 Live 环境或未部署 OSTree；安装到硬盘后将启用原子更新。"
+    fi
+    exit 0
+fi
+
+echo
+c_info "更新模型：OSTree 管理式根（A-B 双部署，不可变系统，失败可回滚）"
+echo
+
+if is_ostree; then
+    c_ok "检测到 OSTree 仓库：$REPO"
+else
+    c_warn "未检测到 OSTree 仓库（$REPO）。"
+    c_warn "Live 环境或非 OSTree 安装：跳过实际更新（仅展示流程）。"
+    echo
+    cat <<'EOF'
+  预期的原子更新流程（安装到硬盘后生效）：
+    1. ostree admin upgrade        # 拉取新提交，写入备用部署
+    2. ostree admin status         # 确认新部署已就绪
+    3. reboot                      # 重启切换到新部署
+    4. （若异常）ostree admin rollback   # 回滚到上一部署
+EOF
+    echo
+    c_info "骨架完成。安装系统后重新运行 '$PROG --apply' 执行真实更新。"
+    exit 0
+fi
+
+# 已部署 OSTree：真正执行（或预览）
+if [ "$ACTION" = "rollback" ]; then
+    c_info "操作：回滚到上一部署 (ostree admin rollback)"
+    if [ "$MODE" = "apply" ]; then
+        need_root --rollback
+        ostree admin rollback && c_ok "已回滚，请重启生效。" || c_err "回滚失败。"
+    else
+        c_warn "[预览] 未加 --apply，未执行任何修改。"
+    fi
+    exit 0
+fi
+
+c_info "操作：升级到最新提交 (ostree admin upgrade)"
+if [ "$MODE" = "apply" ]; then
+    need_root --apply
+    ostree admin upgrade && c_ok "升级完成，请重启切换到新部署。" || c_err "升级失败（当前部署保持不变，未受影响）。"
+else
+    c_warn "[预览] 未加 --apply，未执行任何修改。"
+    c_info "加上 --apply 将真正执行 ostree admin upgrade。"
+fi
+echo
+c_info "查看状态：xos-update --status"

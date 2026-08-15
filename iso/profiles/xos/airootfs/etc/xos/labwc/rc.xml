@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<labwc_config>
+  <core>
+    <gap>0</gap>
+  </core>
+
+  <keyboard>
+    <numlock/>
+  </keyboard>
+
+  <mouse>
+    <doubleClickTime>500</doubleClickTime>
+  </mouse>
+
+  <!-- 快捷键 -->
+  <keybind key="Super+Return">
+    <action name="Execute"><command>alacritty</command></action>
+  </keybind>
+  <keybind key="Super+d">
+    <action name="Execute"><command>xos-shell</command></action>
+  </keybind>
+  <keybind key="Super+q">
+    <action name="Close"/>
+  </keybind>
+  <keybind key="Super+Shift+e">
+    <action name="Exit"/>
+  </keybind>
+
+  <!-- 桌面背景色（后续阶段可换壁纸） -->
+  <background>
+    <color>#11111b</color>
+  </background>
+</labwc_config>

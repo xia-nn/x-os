@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=X OS
+Comment=X OS Wayland Session (labwc + xos-shell)
+Exec=labwc -C /etc/xos/labwc
+Type=Application
+DesktopNames=XOS
