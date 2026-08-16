@@ -34,10 +34,52 @@ echo "root:root" | chpasswd
 mkdir -p /var/lib/xos
 
 # 启用系统服务
-mkdir -p /etc/systemd/system/graphical.target.wants /etc/systemd/system/multi-user.target.wants
-ln -sf /usr/lib/systemd/system/sddm.service /etc/systemd/system/graphical.target.wants/sddm.service
+mkdir -p /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/NetworkManager.service /etc/systemd/system/multi-user.target.wants/NetworkManager.service
-# 默认启动到图形目标（否则 SDDM 不会自动启动）
+
+# X OS 会话入口脚本：在 Wayland (labwc) 合成器内拉起输入法、OOBE 向导与桌面 Shell
+cat > /usr/bin/xos-session <<'SEOF'
+#!/bin/sh
+# X OS session entry: launch desktop components inside labwc (Wayland)
+mkdir -p /tmp/xos
+export XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP=labwc
+export XDG_SESSION_DESKTOP=labwc
+
+# 中文输入法守护进程
+fcitx5 >/tmp/xos/fcitx5.log 2>&1 &
+
+# 首次启动运行 OOBE 向导（选地区/时区），完成后进入桌面
+if [ ! -f /var/lib/xos/firstboot-done ]; then
+  xos-firstboot >/tmp/xos/firstboot.log 2>&1 || true
+fi
+
+# X OS 桌面 Shell（面板 + 启动器）
+xos-shell >/tmp/xos/shell.log 2>&1 &
+
+# 前台启动合成器，退出即登出
+exec labwc -C /etc/xos/labwc
+SEOF
+chmod 755 /usr/bin/xos-session
+
+# 自动登录 live 用户并直接进入 X OS 会话（绕过 SDDM，对虚拟机/裸金属更稳健）
+mkdir -p /etc/systemd/system/getty@tty1.service.d
+cat > /etc/systemd/system/getty@tty1.service.d/autologin.conf <<'AEOF'
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty --autologin live --noclear %I $TERM
+AEOF
+
+mkdir -p /home/live
+cat > /home/live/.bash_profile <<'BEOF'
+if [ -z "$WAYLAND_DISPLAY" ] && [ -z "$DISPLAY" ] && [ "$(tty 2>/dev/null)" = "/dev/tty1" ]; then
+  exec xos-session
+fi
+BEOF
+chown live:live /home/live/.bash_profile
+chmod 644 /home/live/.bash_profile
+
+# 默认启动到图形目标
 ln -sf /usr/lib/systemd/system/graphical.target /etc/systemd/system/default.target
 
 # 配置 Plymouth 图形化启动动画（替代文本滚动，类似 Windows 启动界面）
