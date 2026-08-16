@@ -37,6 +37,8 @@ mkdir -p /var/lib/xos
 mkdir -p /etc/systemd/system/graphical.target.wants /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/sddm.service /etc/systemd/system/graphical.target.wants/sddm.service
 ln -sf /usr/lib/systemd/system/NetworkManager.service /etc/systemd/system/multi-user.target.wants/NetworkManager.service
+# 默认启动到图形目标（否则 SDDM 不会自动启动）
+ln -sf /usr/lib/systemd/system/graphical.target /etc/systemd/system/default.target
 
 # 配置 Plymouth 图形化启动动画（替代文本滚动，类似 Windows 启动界面）
 if command -v plymouth-set-default-theme >/dev/null 2>&1; then

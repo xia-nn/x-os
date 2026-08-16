@@ -1,12 +1,14 @@
 #!/bin/sh
 # labwc autostart：合成器启动后自动拉起会话组件
+mkdir -p /tmp/xos
+
 # 中文输入法守护进程
-fcitx5 &
+fcitx5 >/tmp/xos/fcitx5.log 2>&1 &
 
 # 首次启动运行 OOBE 向导（选地区/时区），完成后进入桌面
 if [ ! -f /var/lib/xos/firstboot-done ]; then
-  xos-firstboot
+  xos-firstboot >/tmp/xos/firstboot.log 2>&1 || true
 fi
 
 # X OS 桌面 Shell（面板 + 启动器）
-xos-shell &
+xos-shell >/tmp/xos/shell.log 2>&1 &
