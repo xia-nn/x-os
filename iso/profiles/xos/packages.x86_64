@@ -21,7 +21,6 @@ sudo
 sddm
 xorg-server
 xorg-xwayland
-xf86-video-vmware
 xf86-video-fbdev
 xf86-video-vesa
 labwc
