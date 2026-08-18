@@ -8,6 +8,11 @@
     <numlock/>
   </keyboard>
 
+  <!-- labwc 启动后自动运行会话脚本（此时 WAYLAND_DISPLAY 已就绪） -->
+  <autostart>
+    <command>/etc/xos/labwc/autostart</command>
+  </autostart>
+
   <mouse>
     <doubleClickTime>500</doubleClickTime>
   </mouse>

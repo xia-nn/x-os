@@ -37,14 +37,10 @@ mkdir -p /var/lib/xos
 mkdir -p /etc/systemd/system/multi-user.target.wants
 ln -sf /usr/lib/systemd/system/NetworkManager.service /etc/systemd/system/multi-user.target.wants/NetworkManager.service
 
-# X OS 会话入口脚本：在 Wayland (labwc) 合成器内拉起输入法、OOBE 向导与桌面 Shell
-cat > /usr/bin/xos-session <<'SEOF'
+# labwc 启动脚本：由 rc.xml autostart 调用，此时 Wayland socket 已就绪
+cat > /etc/xos/labwc/autostart <<'AEOF'
 #!/bin/sh
-# X OS session entry: launch desktop components inside labwc (Wayland)
 mkdir -p /tmp/xos
-export XDG_SESSION_TYPE=wayland
-export XDG_CURRENT_DESKTOP=labwc
-export XDG_SESSION_DESKTOP=labwc
 
 # 中文输入法守护进程
 fcitx5 >/tmp/xos/fcitx5.log 2>&1 &
@@ -56,8 +52,16 @@ fi
 
 # X OS 桌面 Shell（面板 + 启动器）
 xos-shell >/tmp/xos/shell.log 2>&1 &
+AEOF
+chmod 755 /etc/xos/labwc/autostart
 
-# 前台启动合成器，退出即登出
+# X OS 会话入口脚本：自动登录后前台启动 labwc（桌面组件由 labwc autostart 拉起）
+cat > /usr/bin/xos-session <<'SEOF'
+#!/bin/sh
+# X OS session entry: launch labwc Wayland composizer
+export XDG_SESSION_TYPE=wayland
+export XDG_CURRENT_DESKTOP=labwc
+export XDG_SESSION_DESKTOP=labwc
 exec labwc -C /etc/xos/labwc
 SEOF
 chmod 755 /usr/bin/xos-session

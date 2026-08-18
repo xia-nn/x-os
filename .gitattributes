@@ -16,3 +16,5 @@ CMakeLists.txt text eol=lf
 Dockerfile text eol=lf
 packages.x86_64 text eol=lf
 pacman.conf text eol=lf
+iso/profiles/xos/airootfs/etc/xos/labwc/autostart text eol=lf
+iso/profiles/xos/airootfs/etc/xos/labwc/environment text eol=lf
